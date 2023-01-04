@@ -20,12 +20,24 @@ class ViewController: UIViewController {
         return searchController
     }()
     
+    var mySubscriptions = Set<AnyCancellable>()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        self.navigationItem.searchController = searchController
+        searchController.isActive = true
+        
+        searchController.searchBar.searchTextField
+            .myDebounceSearchPublisher
+            .sink { [weak self] receivedValue in
+                print("receivedValue: \(receivedValue)")
+                self?.myLabel.text = receivedValue
+            }
+            .store(in: &mySubscriptions)
     }
-
-
+    
+    
 }
 
 extension UISearchTextField {
